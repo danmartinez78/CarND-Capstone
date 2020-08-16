@@ -82,7 +82,7 @@ class WaypointUpdater(object):
         self.final_waypoints_pub.publish(lane)
 
     def pose_cb(self, msg):
-        self.pose = msf
+        self.pose = msg
 
     def waypoints_cb(self, waypoints):
         self.base_waypoints = waypoints
