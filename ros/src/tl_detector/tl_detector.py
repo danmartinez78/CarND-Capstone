@@ -52,13 +52,13 @@ class TLDetector(object):
         self.upcoming_red_light_pub = rospy.Publisher('/traffic_waypoint', Int32, queue_size=1)
 
         self.bridge = CvBridge()
-        self.light_classifier = TLClassifier()
         self.listener = tf.TransformListener()
 
         self.state = TrafficLight.UNKNOWN
         self.last_state = TrafficLight.UNKNOWN
         self.last_wp = -1
         self.state_count = 0
+        self.light_classifier = TLClassifier(not self.config["is_site"])
 
         rospy.spin()
 
@@ -123,19 +123,16 @@ class TLDetector(object):
         Returns:
             int: ID of traffic light color (specified in styx_msgs/TrafficLight)
         """
-        # For testing, just return the light state
-        #return light.state
+        if(not self.has_image):
+            self.prev_light_loc = None
+            return False
 
-        # if(not self.has_image):
-        #     self.prev_light_loc = None
-        #     return False
+        cv_image = self.bridge.imgmsg_to_cv2(self.camera_image, "bgr8")
 
-        # cv_image = self.bridge.imgmsg_to_cv2(self.camera_image, "bgr8")
-
-        # # #Get classification
-        # result = self.light_classifier.get_classification(cv_image)
-        # rospy.logwarn('Grand Truth/Prediction: {0}/{1}'.format(COLOR_NAME_MAPPING[light.state], COLOR_NAME_MAPPING[result]))
-        result = light.state
+        # #Get classification
+        result = self.light_classifier.get_classification(cv_image)
+        rospy.logwarn('Grand Truth/Prediction: {0}/{1}'.format(COLOR_NAME_MAPPING[light.state], COLOR_NAME_MAPPING[result]))
+        #result = light.state
         return result
 
 
