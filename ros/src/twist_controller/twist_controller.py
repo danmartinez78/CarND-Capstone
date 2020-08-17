@@ -10,7 +10,6 @@ ONE_MPH = 0.44704
 class Controller(object):
     def __init__(self, vehicle_mass, fuel_capacity, brake_deadband, decel_limit, accel_limit, wheel_radius, wheel_base, steer_ratio, max_lat_accel, max_steer_angle):
         # TODO: Implement
-        self.yaw_controller = YawController(wheel_base, steer_ratio, 0.1, max_lat_accel, max_steer_angle)
 
         kp = 0.3
         ki = 0.1
@@ -18,6 +17,7 @@ class Controller(object):
         mn = 0.
         mx = 0.2
         self.throttle_controller = PID(kp, ki, kd, mn, mx)
+        self.yaw_controller = YawController(wheel_base, steer_ratio, 0.1, max_lat_accel, max_steer_angle)
 
         tau = 0.5
         ts = .02
@@ -28,7 +28,7 @@ class Controller(object):
         self.brake_deadband = brake_deadband
         self.decel_limit = decel_limit
         self.accel_limit = accel_limit
-        self.wheel_radiu = wheel_radius
+        self.wheel_radius = wheel_radius
 
         self.last_time = rospy.get_time()
 

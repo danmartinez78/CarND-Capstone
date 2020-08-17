@@ -70,8 +70,6 @@ class TLDetector(object):
         if not self.waypoints_2d:
             self.waypoints_2d = [[waypoint.pose.pose.position.x, waypoint.pose.pose.position.y] for waypoint in waypoints.waypoints]
             self.waypoint_tree = KDTree(self.waypoints_2d)
-            rospy.logwarn(self.waypoint_tree)
-
 
     def traffic_cb(self, msg):
         self.lights = msg.lights
@@ -114,8 +112,8 @@ class TLDetector(object):
         Returns:
             int: index of the closest waypoint in self.waypoints
         """
-        #TODO implement
-        closest_idx = self.waypoint_tree.query([x, y], 1)[1]
+        if self.waypoint_tree:
+            closest_idx = self.waypoint_tree.query([x, y], 1)[1]
         return closest_idx
 
     def get_light_state(self, light):
@@ -138,7 +136,6 @@ class TLDetector(object):
         # result = self.light_classifier.get_classification(cv_image)
         # rospy.logwarn('Grand Truth/Prediction: {0}/{1}'.format(COLOR_NAME_MAPPING[light.state], COLOR_NAME_MAPPING[result]))
         result = light.state
-        rospy.loginfo(light.state)
         return result
 
 
