@@ -25,20 +25,12 @@ as well as to verify your TL classifier.
 TODO (for Yousuf and Aaron): Stopline location for each traffic light.
 '''
 
-LOOKAHEAD_WPS = 50  # Number of waypoints we will publish. You can change this number
+LOOKAHEAD_WPS = 100  # Number of waypoints we will publish. You can change this number
 MAX_DECEL = 0.5
-
 
 class WaypointUpdater(object):
     def __init__(self):
         rospy.init_node('waypoint_updater')
-
-        rospy.Subscriber('/current_pose', PoseStamped, self.pose_cb)
-        rospy.Subscriber('/base_waypoints', Lane, self.waypoints_cb)
-        rospy.Subscriber('/traffic_waypoint', Int32, self.traffic_cb)
-
-        self.final_waypoints_pub = rospy.Publisher(
-            'final_waypoints', Lane, queue_size=1)
 
         self.base_waypoints = None
         self.pose = None
@@ -47,10 +39,16 @@ class WaypointUpdater(object):
         self.stopline_wp_idx = -1
         self.base_lane = None
 
+        rospy.Subscriber('/current_pose', PoseStamped, self.pose_cb)
+        rospy.Subscriber('/base_waypoints', Lane, self.waypoints_cb)
+        rospy.Subscriber('/traffic_waypoint', Int32, self.traffic_cb)
+        self.final_waypoints_pub = rospy.Publisher(
+            'final_waypoints', Lane, queue_size=1)
+
         self.loop()
 
     def loop(self):
-        rate = rospy.Rate(50)
+        rate = rospy.Rate(10)
         while not rospy.is_shutdown():
             if self.pose and self.base_lane and self.wp_tree:
                 self.publish_waypoints()
@@ -108,7 +106,7 @@ class WaypointUpdater(object):
         return temp
 
     def pose_cb(self, msg):
-        self.pose = msg  # TODO: Implement # pass
+        self.pose = msg
 
     def waypoints_cb(self, waypoints):
         self.base_lane = waypoints
